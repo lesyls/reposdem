@@ -1,0 +1,82 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .slider-container {
+        position: relative;
+        height: 450px;         
+        max-width: 100%;
+        background: #dee2e6;
+        margin: 20px 0;
+        overflow: hidden;
+        border-radius: 15px;
+    }
+    .slide {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+    }
+    .prev, .next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.5);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        cursor: pointer;
+        font-size: 18px;
+        border-radius: 20px;
+    }
+    .prev { left: 8px; }
+    .next { right: 8px; }
+</style>
+
+<h2>Личный кабинет</h2>
+<p><strong>{{ user.fio }}</strong> ({{ user.username }})</p>
+
+<div class="slider-container">
+    <img class="slide" src="{% static 'core/images/88-gHQq11R0.jpg' %}" style="display:block">
+    <img class="slide" src="{% static 'core/images/1678694971_sa.jpg' %}" style="display:none">
+    <img class="slide" src="{% static 'core/images/6410690722451365045.jpg' %}" style="display:none">
+    <img class="slide" src="{% static 'core/images/course_1.jpg' %}" style="display:none">
+    <button class="prev" onclick="prevSlide()"><</button>
+    <button class="next" onclick="nextSlide()">></button>
+</div>
+
+<script>
+let slides = document.querySelectorAll('.slider-container .slide');
+let idx = 0;
+function show(n) {
+    for (let i = 0; i < slides.length; i++) slides[i].style.display = 'none';
+    slides[n].style.display = 'block';
+}
+function nextSlide() { idx = (idx + 1) % slides.length; show(idx); }
+function prevSlide() { idx = (idx - 1 + slides.length) % slides.length; show(idx); }
+setInterval(nextSlide, 3000);
+show(0);
+</script>
+
+<h3>Мои заявки</h3>
+{% for app in applications %}
+<div class="app-card">
+    <p><strong>Курс:</strong> {{ app.course }}</p>
+    <p><strong>Дата:</strong> {{ app.desired_date|date:"d.m.Y" }}</p>
+    <p><strong>Оплата:</strong> {{ app.payment_method }}</p>
+    <p><strong>Статус:</strong> {{ app.status }}</p>
+    {% if app.status == 'Обучение завершено' %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="app_id" value="{{ app.id }}">
+            <textarea name="review" rows="2" placeholder="Ваш отзыв...">{{ app.review|default:'' }}</textarea>
+            <button type="submit">Сохранить отзыв</button>
+        </form>
+    {% endif %}
+</div>
+{% empty %}
+<p>У вас нет заявок. <a href="/new-application/">Создать заявку</a></p>
+{% endfor %}
+{% endblock %}

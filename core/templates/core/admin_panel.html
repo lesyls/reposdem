@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Админ панель</h2>
+<form method="get" style="margin-bottom: 20px;">
+    <select name="course_filter">
+        <option value="">Все курсы</option>
+        {% for c in courses %}
+            <option value="{{ c }}" {% if course_filter == c %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Показать</button>
+</form>
+
+<table border="1" cellpadding="8" style="width:100%; border-collapse: collapse;">
+    <tr style="background:#007bff; color:white;">
+        <th>ID</th><th>Пользователь</th><th>Курс</th><th>Дата</th><th>Статус</th><th></th>
+    </tr>
+    {% for app in applications %}
+    <tr>
+        <td>{{ app.id }}</td>
+        <td>{{ app.user.username }}</td>
+        <td>{{ app.course }}</td>
+        <td>{{ app.desired_date|date:'d.m.Y' }}</td>
+        <td>{{ app.status }}</td>
+        <td>
+            <form method="post" style="margin:0; display:flex;  gap:5px;">
+                {% csrf_token %}
+                <input type="hidden" name="app_id" value="{{ app.id }}">
+                <select name="new_status">
+                    <option {% if app.status == 'Новая' %}selected{% endif %}>Новая</option>
+                    <option {% if app.status == 'Идет обучение' %}selected{% endif %}>Идет обучение</option>
+                    <option {% if app.status == 'Обучение завершено' %}selected{% endif %}>Обучение завершено</option>
+                </select>
+                <button type="submit">Изменить</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+    
+{% endblock %}

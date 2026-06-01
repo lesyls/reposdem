@@ -1,0 +1,29 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Новая заявка</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label>Курс</label>
+        <select name="course" required>
+            <option>Повышение квалификации</option>
+            <option>Переподготовка</option>
+            <option>Охрана труда</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Желаемая дата (ДД.ММ.ГГГГ)</label>
+        <input type="text" name="date" placeholder="02.06.2026" required>
+    </div>
+    <div class="form-group">
+        <label>Способ оплаты</label>
+        <select name="payment" required>
+            <option>Предоплата по QR-коду</option>
+            <option>Оплата картой МИР</option>
+            <option>Постоплата в офисе</option>
+        </select>
+    </div>
+    <button type="submit">Отправить</button>
+</form>
+{% endblock %}
